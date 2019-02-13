@@ -7,8 +7,14 @@ export default class BusControl extends Component {
 		return (
 			<Fragment>
 				<Sidebar />
-				<BusSearch />
-				<BusList />
+				<div
+					style={{
+						width: "100%"
+					}}
+				>
+					<BusSearch />
+					<BusList />
+				</div>
 			</Fragment>
 		);
 	}
