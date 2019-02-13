@@ -31,7 +31,11 @@ router.post("/getbuses", function (req, res) {
             results.forEach(route => {
                 let routeid = (route.routeid);
                 console.log("routeid is", routeid)
-                let query2 = "select id, init_time, end_time from route where routeid = " + routeid + " and '" + req.body.time + "' between init_time AND end_time;";
+                let query2 = "";
+                if (req.body.time)
+                    query2 = "select id, init_time, end_time from route where routeid = " + routeid + " and '" + req.body.time + "' between init_time AND end_time;";
+                else
+                    query2 = "select id, init_time, end_time from route where routeid = " + routeid + ");";
                 connection.query(query2, function (error, results2, fields) {
                     if (error) {
                         console.log(error);

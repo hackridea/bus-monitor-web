@@ -5,8 +5,8 @@ var bus = require("./bus");
 var user = require("./user");
 
 router.post("/", function (req, res) {
-    console.log("ffd");
-    res.send("fdd");
+    console.log(req.body, req.params);
+    res.send({ success: true });
 });
 
 router.use("/bus", bus);
