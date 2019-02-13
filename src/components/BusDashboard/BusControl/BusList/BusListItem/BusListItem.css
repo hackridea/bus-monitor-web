@@ -1,0 +1,30 @@
+.bus-item {
+	list-style-type: none;
+	width: 80%;
+	margin: 20px;
+	margin-left: 30px;
+	height: 110px;
+	padding: 10px;
+	box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+	display: flex;
+}
+.bus-item .bus-image {
+	width: 25%;
+	height: 100%;
+	margin-right: 15px;
+}
+.bus-item .bus-image img {
+	width: 100%;
+	height: 100%;
+}
+.bus-item .header {
+	font-size: 20px;
+}
+.bus-body {
+	width: 100%;
+}
+.bus-body .info {
+	font-size: 12px;
+	display: inline-block;
+	margin-right: 10px;
+}
