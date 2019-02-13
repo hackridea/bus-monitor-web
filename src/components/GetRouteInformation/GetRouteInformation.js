@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import "./GetRouteInformation.css";
 import { CustomInput, Button } from "../../library";
+import { Context } from "../Context/Context";
 export default class GetRouteInformation extends Component {
+	static contextType = Context;
 	state = {
 		from: "",
 		fromerror: false,
@@ -14,11 +16,11 @@ export default class GetRouteInformation extends Component {
 		return new Promise(resolve => {
 			console.log(field, val);
 			this.setState(
-				prevstate => ({
+				{
 					[field]: val,
 					[field + "error"]: val.length === 0,
 					error: val.length === 0
-				}),
+				},
 				resolve()
 			);
 		});
@@ -30,6 +32,17 @@ export default class GetRouteInformation extends Component {
 		).then(() => {
 			if (this.state.error) return;
 			console.log(this.state.error);
+			if (this.state.step === 2) {
+				this.context
+					.setLocation({
+						from: this.state.from,
+						to: this.state.to
+					})
+					.then(() => {
+						this.props.history.push("/buses");
+					});
+				return;
+			}
 			this.setState(prevstate => ({
 				step: prevstate.step + 1
 			}));
@@ -63,7 +76,11 @@ export default class GetRouteInformation extends Component {
 						/>
 					</div>
 				)}
-				<div style={{ textAlign: "right" }}>
+				<div
+					style={{
+						textAlign: "right"
+					}}
+				>
 					<Button color="info" size="vsmall" onClick={this.proceed}>
 						Next
 					</Button>
