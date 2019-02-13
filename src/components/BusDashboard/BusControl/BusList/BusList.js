@@ -5,6 +5,9 @@ export default class BusList extends Component {
 		let buslist = this.props.buses.map((bus, index) => {
 			return <Bus {...bus} key={index} />;
 		});
-		return <div>{buslist}</div>;
+		let renderVar = buslist;
+		if (!this.props.buses.length)
+			renderVar = <div className="padded-message">No bus here.</div>;
+		return <div>{renderVar}</div>;
 	}
 }

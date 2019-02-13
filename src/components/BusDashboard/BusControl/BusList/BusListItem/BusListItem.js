@@ -3,7 +3,6 @@ import "./BusListItem.css";
 import BusImage from "./bus-image.png";
 export default class BusListItem extends Component {
 	render() {
-		console.log(this.props);
 		return (
 			<li className="bus-item">
 				<div className="bus-image">

@@ -37,3 +37,8 @@
 .bus-search button:focus {
 	background: #ccc;
 }
+.padded-message {
+	width: 100%;
+	padding: 20px;
+	text-align: center;
+}

@@ -31,7 +31,28 @@ export default class BusControl extends Component {
 		]
 	};
 	state = {
-		...this.locobject
+		raw: { ...this.locobject },
+		search_result: this.locobject.buses
+	};
+	searchIt = keyword => {
+		let search_result = [];
+		this.state.raw.buses.forEach(bus => {
+			if (
+				bus.name.toLowerCase().match(keyword) ||
+				bus.id.toLowerCase().match(keyword)
+			) {
+				search_result.push(bus);
+			} else {
+				let flag = false;
+				bus.locations.forEach(location => {
+					if (location.name.toLowerCase().match(keyword)) flag = true;
+				});
+				if (flag) search_result.push(bus);
+			}
+		});
+		this.setState({
+			search_result: search_result
+		});
 	};
 	render() {
 		return (
@@ -42,8 +63,8 @@ export default class BusControl extends Component {
 						width: "100%"
 					}}
 				>
-					<BusSearch />
-					<BusList buses={this.state.buses} />
+					<BusSearch search={this.searchIt} />
+					<BusList buses={this.state.search_result} />
 				</div>
 			</Fragment>
 		);
