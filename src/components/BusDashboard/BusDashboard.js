@@ -1,7 +1,8 @@
 import React, { Component, Fragment } from "react";
 import { Redirect } from "react-router-dom";
 import { Context } from "../Context/Context";
-
+import BusControl from "./BusControl/BusControl";
+import "./BusDashboard.css";
 export default class BusDashboard extends Component {
 	static contextType = Context;
 	render() {
@@ -13,7 +14,9 @@ export default class BusDashboard extends Component {
 		return (
 			<Fragment>
 				{render}
-				Bus Component
+				<div className="container">
+					<BusControl />
+				</div>
 			</Fragment>
 		);
 	}

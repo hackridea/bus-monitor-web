@@ -7,6 +7,15 @@ class ContextProvider extends Component {
 		from: "",
 		to: ""
 	};
+	constructor(props) {
+		super(props);
+		let stored_location = false;
+		let raw_location = localStorage.getItem("location");
+		if (raw_location) {
+			stored_location = JSON.parse(raw_location);
+			this.state = stored_location;
+		}
+	}
 	getLocation = () => {
 		return {
 			from: this.state.from,
@@ -15,6 +24,7 @@ class ContextProvider extends Component {
 	};
 	setLocation = location => {
 		return new Promise(resolve => {
+			localStorage.setItem("location", JSON.stringify(location));
 			this.setState(
 				{
 					...location

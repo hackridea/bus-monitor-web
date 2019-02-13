@@ -12,9 +12,12 @@ export default class GetRouteInformation extends Component {
 		step: 1,
 		error: false
 	};
+	componentWillMount() {
+		let location = this.context.getLocation();
+		if (location.from && location.to) this.props.history.push("/buses");
+	}
 	change = field => val => {
 		return new Promise(resolve => {
-			console.log(field, val);
 			this.setState(
 				{
 					[field]: val,
@@ -31,7 +34,6 @@ export default class GetRouteInformation extends Component {
 			this.state[errors[this.state.step - 1]]
 		).then(() => {
 			if (this.state.error) return;
-			console.log(this.state.error);
 			if (this.state.step === 2) {
 				this.context
 					.setLocation({
