@@ -39,7 +39,12 @@ export default class BusControl extends Component {
 				to: this.props.to
 			})
 			.then(response => {
+				if (!response.data.buses.length) return;
 				console.log(response.data);
+				this.setState({
+					raw: response.data,
+					search_result: response.data.buses
+				});
 			})
 			.catch(err => {
 				console.log(err);

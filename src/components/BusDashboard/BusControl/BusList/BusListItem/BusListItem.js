@@ -25,20 +25,26 @@ export default class BusListItem extends Component {
 						</div>
 					</div>
 					<div>
-						<div className="info">
-							Through :{" "}
-							{this.props.locations.map((location, index) => {
-								let comma = ",";
-								if (
-									index === 0 ||
-									index === this.props.locations.length - 1
-								)
-									return null;
-								if (index === this.props.locations.length - 2)
-									comma = "";
-								return location.name + " " + comma + " ";
-							})}
-						</div>
+						{this.props.locations.length > 2 && (
+							<div className="info">
+								Through :{" "}
+								{this.props.locations.map((location, index) => {
+									let comma = ",";
+									if (
+										index === 0 ||
+										index ===
+											this.props.locations.length - 1
+									)
+										return null;
+									if (
+										index ===
+										this.props.locations.length - 2
+									)
+										comma = "";
+									return location.name + " " + comma + " ";
+								})}
+							</div>
+						)}
 					</div>
 				</div>
 			</Link>
