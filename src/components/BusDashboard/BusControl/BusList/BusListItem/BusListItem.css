@@ -7,6 +7,11 @@
 	padding: 10px;
 	box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
 	display: flex;
+	color: black;
+	text-decoration: none;
+}
+.bus-item .bus-body {
+	text-decoration: none;
 }
 .bus-item .bus-image {
 	width: 25%;

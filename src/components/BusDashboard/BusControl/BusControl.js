@@ -2,6 +2,7 @@ import React, { Component, Fragment } from "react";
 import Sidebar from "./Sidebar/Sidebar";
 import BusSearch from "./BusSearch/BusSearch";
 import BusList from "./BusList/BusList";
+import axios from "axios";
 export default class BusControl extends Component {
 	locobject = {
 		buses: [
@@ -30,6 +31,20 @@ export default class BusControl extends Component {
 			}
 		]
 	};
+	componentWillMount() {
+		console.log("sent");
+		axios
+			.post("http://192.168.137.1:3001/user/getbuses", {
+				from: this.props.from,
+				to: this.props.to
+			})
+			.then(response => {
+				console.log(response.data);
+			})
+			.catch(err => {
+				console.log(err);
+			});
+	}
 	state = {
 		raw: { ...this.locobject },
 		search_result: this.locobject.buses

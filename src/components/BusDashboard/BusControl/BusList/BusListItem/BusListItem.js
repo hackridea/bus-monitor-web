@@ -1,10 +1,11 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import "./BusListItem.css";
 import BusImage from "./bus-image.png";
 export default class BusListItem extends Component {
 	render() {
 		return (
-			<li className="bus-item">
+			<Link className="bus-item" to={"/bus/" + this.props.id}>
 				<div className="bus-image">
 					<img src={BusImage} />
 				</div>
@@ -40,7 +41,7 @@ export default class BusListItem extends Component {
 						</div>
 					</div>
 				</div>
-			</li>
+			</Link>
 		);
 	}
 }
