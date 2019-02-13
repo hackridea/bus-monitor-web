@@ -60,8 +60,9 @@ router.post("/login", function (req, res) {
 router.post("/createpath", function (req, res) {
     console.log("create path request", req.body);
     let connection = require('../lib/db');
-    let query = "select distinct(routeid) from paths p1 where (select idx from paths p2 where p2.routeid = p1.routeid AND p2.name =" + connection.escape(req.body.from) + " ) < (select idx from paths p3 where p3.routeid = p1.routeid AND  p3.name = " + connection.escape(req.body.to) + ")";
-    connection.query(query, function (error, results, fields) {
+    let query = "insert into route(id,  init_time, end_time) values(?,?,?)";
+    let inpData = req.body;
+    connection.query(query,[inpData.id, inpData.init_time, inpData.end_time], function (error, results, fields) {
         if (error) {
             console.log(error);
             res.status(500).send({

@@ -9,11 +9,12 @@ router.get("/test", function (req, res) {
 router.post("/getbuses", function (req, res) {
     console.log("get buses request", req.body);
     let connection = require('../lib/db');
-    let query = "select distinct(routeid) from paths p1 where (select idx from paths p2 where p2.routeid = p1.routeid AND p2.loc =" + connection.escape(req.body.from) + " ) < (select idx from paths p3 where p3.routeid = p1.routeid AND  p3.loc = " + connection.escape(req.body.to) + ")";
+    let query = "select distinct(routeid) from paths p1 where (select idx from paths p2 where p2.routeid = p1.routeid AND p2.name =" + connection.escape(req.body.from) + " ) < (select idx from paths p3 where p3.routeid = p1.routeid AND  p3.name = " + connection.escape(req.body.to) + ")";
+    console.log(query);
     connection.query(query, function (error, results, fields) {
         if (error) {
             console.log(error);
-            res.status(500).send({
+            res.send({
                 success: false,
                 message: 'There was a problem',
                 locations: []
@@ -21,13 +22,15 @@ router.post("/getbuses", function (req, res) {
         }
         else {
             if (!results.length) {
-                res.status(500).send({
+                res.send({
                     success: false,
                     message: 'route not found',
                     locations: []
                 });
                 return;
             }
+            console.log(results)
+            let buses = [];
             results.forEach(route => {
                 let routeid = (route.routeid);
                 console.log("routeid is", routeid)
@@ -35,11 +38,12 @@ router.post("/getbuses", function (req, res) {
                 if (req.body.time)
                     query2 = "select id, init_time, end_time from route where routeid = " + routeid + " and '" + req.body.time + "' between init_time AND end_time;";
                 else
-                    query2 = "select id, init_time, end_time from route where routeid = " + routeid + ");";
+                    query2 = "select id, init_time, end_time from route where routeid = " + routeid + ";";
+                console.log("sudarshan", query2);
                 connection.query(query2, function (error, results2, fields) {
                     if (error) {
                         console.log(error);
-                        res.status(500).send({
+                        res.send({
                             success: false,
                             message: 'There was a problem',
                             locations: []
@@ -48,7 +52,7 @@ router.post("/getbuses", function (req, res) {
                     }
                     else {
                         if (!results2.length) {
-                            res.status(500).send({
+                            res.send({
                                 success: false,
                                 message: 'route not found',
                                 locations: []
@@ -57,11 +61,27 @@ router.post("/getbuses", function (req, res) {
                         }
                         let sendData = { id: results2[0].id, init_time: results2[0].init_time, end_time: results2[0].end_time }
                         console.log(sendData)
-                        let query3 = "select * from paths where routeid =" + routeid + ";";
-                        connection.query(query3, function (error, results3, fields) {
+                        let query2 = `select name from bus where id = '${results2[0].id}'`;
+                        connection.query(query2, function (error, results3, fields) {
                             if (error) {
                                 console.log(error);
-                                res.status(500).send({
+                                res.send({
+                                    success: false,
+                                    message: 'could not get bus name',
+                                    locations: []
+                                });
+                                return;
+                            }
+                            else {
+                               sendData.name = results3[0].name;
+                               console.log(results3[0].name)
+                            }
+                        });
+                        let query3 = "select * from paths where routeid =" + routeid + ";";
+                        connection.query(query3, function (error, results4, fields) {
+                            if (error) {
+                                console.log(error);
+                                res.send({
                                     success: false,
                                     message: '2There was a problem',
                                     locations: []
@@ -70,10 +90,10 @@ router.post("/getbuses", function (req, res) {
                             }
                             else {
                                 sendData.locations = [];
-                                results3.forEach(location => {
+                                results4.forEach(location => {
                                     sendData.locations.push(location);
                                 });
-                                console.log(sendData);
+                                // console.log(sendData);
                                 res.send(sendData);
                                 return;
                             }
