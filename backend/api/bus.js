@@ -2,9 +2,6 @@ var express = require('express');
 var router = express.Router();
 var createToken = require('../lib/createToken');
 
-
-
-
 router.post("/register", function (req, res) {
     console.log("register request", req.body);
     let connection = require('../lib/db');
@@ -35,4 +32,4 @@ router.post("/register", function (req, res) {
     });
 });
 
-module.exports = router;;
+module.exports = router;
