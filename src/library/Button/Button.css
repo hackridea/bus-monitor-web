@@ -136,3 +136,9 @@
 	--btn-text-color: #333;
 	font-weight: normal;
 }
+.btn.my-2 {
+	margin: 16px 0;
+}
+.btn.mx-2 {
+	margin: 0 16px;
+}

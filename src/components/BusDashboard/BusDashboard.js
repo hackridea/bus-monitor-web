@@ -15,7 +15,7 @@ export default class BusDashboard extends Component {
 			<Fragment>
 				{render}
 				<div className="container">
-					<BusControl />
+					<BusControl from={location.from} to={location.to} />
 				</div>
 			</Fragment>
 		);
