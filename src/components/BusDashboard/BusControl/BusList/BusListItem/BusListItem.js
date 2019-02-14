@@ -5,7 +5,10 @@ import BusImage from "./bus-image.png";
 export default class BusListItem extends Component {
 	render() {
 		return (
-			<Link className="bus-item" to={"/bus/" + this.props.id}>
+			<Link
+				className="bus-item"
+				to={"/bus/" + this.props.id + "/" + this.props.routeid}
+			>
 				<div className="bus-image">
 					<img src={BusImage} />
 				</div>

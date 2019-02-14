@@ -12,7 +12,7 @@ class App extends Component {
 				<ContextProvider>
 					<Switch>
 						<Route path="/buses" component={BusDashboard} />
-						<Route path="/bus/:id" component={BusInfo} />
+						<Route path="/bus/:id/:route" component={BusInfo} />
 						<Route path="/" component={GetRouteInformation} />
 					</Switch>
 				</ContextProvider>

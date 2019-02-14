@@ -4,43 +4,22 @@ import BusSearch from "./BusSearch/BusSearch";
 import BusList from "./BusList/BusList";
 import axios from "axios";
 export default class BusControl extends Component {
-	locobject = {
-		buses: [
-			{
-				name: "Kanthi",
-				id: "123",
-				init_time: new Date(),
-				end_time: new Date(),
-				locations: [
-					{
-						name: "Udupi",
-						latitude: 0.46546,
-						longitude: 0.76546
-					},
-					{
-						name: "Padubidri",
-						latitude: 0.46546,
-						longitude: 0.76546
-					},
-					{
-						name: "Mangalore",
-						latitude: 0.46546,
-						longitude: 0.76546
-					}
-				]
-			}
-		]
+	state = {
+		raw: { buses: [] },
+		search_result: [],
+		loading: true
 	};
 	componentWillMount() {
-		console.log("sent");
 		axios
 			.post("http://192.168.137.1:3001/user/getbuses", {
 				from: this.props.from,
 				to: this.props.to
 			})
 			.then(response => {
+				this.setState({
+					loading: false
+				});
 				if (!response.data.buses.length) return;
-				console.log(response.data);
 				this.setState({
 					raw: response.data,
 					search_result: response.data.buses
@@ -50,10 +29,6 @@ export default class BusControl extends Component {
 				console.log(err);
 			});
 	}
-	state = {
-		raw: { ...this.locobject },
-		search_result: this.locobject.buses
-	};
 	searchIt = keyword => {
 		let search_result = [];
 		this.state.raw.buses.forEach(bus => {
@@ -74,17 +49,55 @@ export default class BusControl extends Component {
 			search_result: search_result
 		});
 	};
+	search = params => {
+		axios
+			.post("http://192.168.137.1:3001/user/getbuses", {
+				from: params.from,
+				to: params.to,
+				time: new Date(
+					new Date().getFullYear(),
+					params.month - 1,
+					params.date,
+					params.hour
+				)
+			})
+			.then(response => {
+				this.setState({
+					loading: true
+				});
+				if (!response.data.buses || !response.data.buses.length) {
+					this.setState({
+						loading: false,
+						raw: { buses: [] },
+						search_result: []
+					});
+				} else {
+					this.setState({
+						loading: false,
+						raw: response.data,
+						search_result: response.data.buses
+					});
+				}
+			})
+			.catch(err => {
+				console.log(err);
+			});
+	};
 	render() {
 		return (
 			<Fragment>
-				<Sidebar />
+				<Sidebar search={this.search} />
 				<div
 					style={{
 						width: "100%"
 					}}
 				>
-					<BusSearch search={this.searchIt} />
-					<BusList buses={this.state.search_result} />
+					{!this.state.loading && (
+						<Fragment>
+							<BusSearch search={this.searchIt} />
+							<BusList buses={this.state.search_result} />
+						</Fragment>
+					)}
 				</div>
 			</Fragment>
 		);

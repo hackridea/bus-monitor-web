@@ -17,7 +17,9 @@ export default class Sidebar extends Component {
 		});
 	};
 	search = () => {
-		console.log("Searching");
+		this.props.search({
+			...this.state
+		});
 	};
 	componentWillMount() {
 		this.setState({
