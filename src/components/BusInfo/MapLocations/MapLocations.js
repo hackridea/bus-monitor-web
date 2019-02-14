@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from "react";
 import axios from "axios";
+import io from "socket.io-client";
 import {
 	withScriptjs,
 	withGoogleMap,
@@ -8,6 +9,7 @@ import {
 	Polyline,
 	lineSymbol
 } from "react-google-maps";
+let socket = io("http://192.168.137.1:3001");
 const getCoordinates = coordinates => {
 	return new Promise(resolve => {
 		let coordinateString = "";
@@ -21,12 +23,19 @@ const getCoordinates = coordinates => {
 			"&interpolate=true&key=AIzaSyCcROrMdLU1PuJlY6euq4RRNPxkeYy2_bk";
 		axios.get(link).then(response => {
 			let points = [];
-			response.data.snappedPoints.forEach(point => {
-				points.push({
-					lat: point.location.latitude,
-					lng: point.location.longitude
+			if (
+				!response.data.snappedPoints ||
+				response.data.snappedPoints.length < coordinates.length
+			) {
+				points = coordinates;
+			} else {
+				response.data.snappedPoints.forEach(point => {
+					points.push({
+						lat: point.location.latitude,
+						lng: point.location.longitude
+					});
 				});
-			});
+			}
 			resolve(points);
 		});
 	});
@@ -35,9 +44,8 @@ const getCoordinates = coordinates => {
 let pathCoordinates = [];
 const MyMapComponent = withScriptjs(
 	withGoogleMap(props => {
-		getCoordinates(pathCoordinates);
 		return (
-			<GoogleMap defaultZoom={8} defaultCenter={props.points[0]}>
+			<GoogleMap defaultZoom={15} defaultCenter={props.points[0]}>
 				<Polyline
 					path={props.points}
 					geodesic={true}
@@ -54,7 +62,12 @@ const MyMapComponent = withScriptjs(
 						]
 					}}
 				/>
-				<Marker position={{ lat: -34.397, lng: 150.644 }} />
+				<Marker
+					position={{
+						lat: props.current.lat * 1,
+						lng: props.current.lng * 1
+					}}
+				/>
 			</GoogleMap>
 		);
 	})
@@ -63,7 +76,11 @@ const MyMapComponent = withScriptjs(
 export default class MapLocation extends Component {
 	state = {
 		loading: true,
-		points: []
+		points: [],
+		current_location: {
+			lat: this.props.locations[0].lat,
+			lng: this.props.locations[0].lng
+		}
 	};
 	componentWillMount() {
 		pathCoordinates = [];
@@ -73,6 +90,7 @@ export default class MapLocation extends Component {
 				lng: location.lon
 			});
 		});
+		console.log(this.props.locations);
 		getCoordinates(pathCoordinates).then(points => {
 			console.log(points);
 			this.setState({
@@ -81,12 +99,26 @@ export default class MapLocation extends Component {
 			});
 		});
 	}
+	constructor(props) {
+		super(props);
+		socket.on("currentData", info => {
+			console.log(info);
+			if (info.routeid == this.props.route)
+				this.setState({
+					current_location: {
+						lat: info.lat,
+						lng: info.lng
+					}
+				});
+		});
+	}
 	render() {
 		return (
 			<Fragment>
 				{!this.state.loading && (
 					<MyMapComponent
 						isMarkerShown
+						current={this.state.current_location}
 						points={this.state.points}
 						googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyCcROrMdLU1PuJlY6euq4RRNPxkeYy2_bk&v=3.exp&libraries=geometry,drawing,places"
 						loadingElement={<div style={{ height: "100%" }} />}

@@ -1,16 +1,20 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
+import { withRouter } from "react-router-dom";
+import { Button } from "../../library";
 import BusImage from "./bus-image.png";
 import MapLocations from "./MapLocations/MapLocations";
 import "./BusInfo.css";
 import axios from "axios";
-export default class BusInfo extends Component {
+class BusInfo extends Component {
 	state = {
 		name: "",
 		id: "",
 		init_time: "",
 		end_time: "",
 		locations: [],
-		loading: true
+		loading: true,
+		showMap: false,
+		mapContent: "Show route"
 	};
 	componentWillMount() {
 		axios
@@ -31,13 +35,35 @@ export default class BusInfo extends Component {
 				});
 			});
 	}
+
+	goBack = () => {
+		this.props.history.goBack();
+	};
+
+	toggleMap = () => {
+		this.setState(prevState => ({
+			mapContent: prevState.showMap ? "Show Route" : "Hide Route",
+			showMap: !prevState.showMap
+		}));
+	};
+
 	render() {
+		const { showMap, mapContent } = this.state;
 		return (
 			<div className="bus-information">
+				<Button
+					onClick={this.goBack}
+					className="my-2"
+					size="vsmall"
+					variant="info"
+				>
+					Go Back
+				</Button>
 				{!this.state.loading && (
 					<div
 						style={{
-							display: "flex"
+							display: "flex",
+							paddingBottom: "20px"
 						}}
 					>
 						<div className="bus-information-image">
@@ -50,15 +76,17 @@ export default class BusInfo extends Component {
 						>
 							<div className="bus-information-details">
 								<div className="header">{this.state.name}</div>
-								<div>ID : {this.state.id}</div>
+								<div>ID: {this.state.id}</div>
 							</div>
 
 							<div className="bus-information-details">
 								<div className="info">
-									From : {this.state.locations[0].name}
+									<b>From:</b> {this.state.locations[0].name}
 								</div>
+								<br />
+								<br />
 								<div className="info">
-									To :{" "}
+									<b>To:</b>{" "}
 									{
 										this.state.locations[
 											this.state.locations.length - 1
@@ -68,22 +96,28 @@ export default class BusInfo extends Component {
 							</div>
 							<div className="bus-information-details">
 								<div className="info">
-									Start time :{" "}
-									{new Date(this.state.init_time).getHours()}
+									<b>Start time:</b>{" "}
+									{new Date(this.state.init_time).getHours()}{" "}
+									hr
 								</div>
 								<div className="info">
-									End Time :{" "}
-									{new Date(this.state.end_time).getHours()}
+									<b>End Time:</b>{" "}
+									{new Date(this.state.end_time).getHours()}{" "}
+									hr
 								</div>
 							</div>
 
 							{this.state.locations.length > 2 && (
 								<div className="bus-information-details">
 									<div className="info">
-										Through :
+										<b>Through:</b>{" "}
 										{this.state.locations.map(
 											(location, index) => {
-												let comma = ",";
+												let Comma = (
+													<i className="material-icons">
+														arrow_right_alt
+													</i>
+												);
 												if (
 													index === 0 ||
 													index ===
@@ -98,12 +132,12 @@ export default class BusInfo extends Component {
 														.length -
 														2
 												)
-													comma = "";
+													Comma = null;
 												return (
-													location.name +
-													" " +
-													comma +
-													" "
+													<Fragment>
+														{location.name}
+														{Comma}
+													</Fragment>
 												);
 											}
 										)}
@@ -111,17 +145,26 @@ export default class BusInfo extends Component {
 								</div>
 							)}
 							<div className="bus-information-details">
-								<div className="info">Cost : {15.1} Rs</div>
+								<div className="info">Cost: {15.1} Rs</div>
 							</div>
+							<Button onClick={this.toggleMap} className="mx-2">
+								{mapContent}
+							</Button>
 						</div>
 					</div>
 				)}
-				{this.state.locations.length && (
+				{showMap && this.state.locations.length && (
 					<div className="map-information">
-						<MapLocations locations={this.state.locations} />
+						<MapLocations
+							id={this.state.id}
+							route={this.state.routeid}
+							locations={this.state.locations}
+						/>
 					</div>
 				)}
 			</div>
 		);
 	}
 }
+
+export default withRouter(BusInfo);

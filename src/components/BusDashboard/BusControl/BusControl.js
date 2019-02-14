@@ -50,17 +50,28 @@ export default class BusControl extends Component {
 		});
 	};
 	search = params => {
-		axios
-			.post("http://192.168.137.1:3001/user/getbuses", {
+		console.log(params);
+		localStorage.setItem(
+			"location",
+			JSON.stringify({
 				from: params.from,
-				to: params.to,
-				time: new Date(
-					new Date().getFullYear(),
-					params.month - 1,
-					params.date,
-					params.hour
-				)
+				to: params.to
 			})
+		);
+		let request = {
+			from: params.from,
+			to: params.to,
+			time: new Date(
+				new Date().getFullYear(),
+				params.month - 1,
+				params.date,
+				params.hour
+			)
+		};
+		if (!params.month.length || !params.date.length || !params.hour.length)
+			delete request.time;
+		axios
+			.post("http://192.168.137.1:3001/user/getbuses", request)
 			.then(response => {
 				this.setState({
 					loading: true

@@ -1,6 +1,5 @@
 .bus-information {
 	width: 100%;
-	padding: 30px;
 	box-sizing: border-box;
 }
 .bus-information .header {
@@ -17,8 +16,13 @@
 	height: 100%;
 }
 .bus-information-details {
-	width: 50%;
 	padding: 10px 30px;
+}
+.bus-information-details i {
+	line-height: 16px;
+	font-size: 16px;
+	position: relative;
+	top: 4px;
 }
 .bus-information-details .info {
 	font-size: 15px;
