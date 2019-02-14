@@ -57,11 +57,60 @@ router.post("/login", function (req, res) {
     });
 });
 
+router.post('/addpath', (req, res) => {
+    console.log('add bus route', req.body);
+    let connection = require('../lib/db');
+    const Routeid = req.body.id;
+    const inittime = req.body.init_time;
+    const endtime = req.body.end_time;
+    let query = "insert into route(id,  init_time, end_time) values(?,?,?)";
+    let paths = req.body.paths;
+    connection.query(query, [Routeid, inittime, endtime], (err, result, field) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send({
+                success: false,
+                message: 'There was a problem'
+            });
+        }
+        else {
+            console.log('Added Route...', paths.length);
+            routeId = result.insertId;
+            paths.forEach((path, index) => {
+                let query = `insert into paths values(${routeId},${index},'${path.name}',${path.lat},${path.lon}, ${path.cost});`;
+                connection.query(query, (err, result, field) => {
+                    if (err) {
+                        console.log(err);
+                        res.status(500).send({
+                            success: false,
+                            message: 'There was a problem'
+                        });
+                    }
+                    else {
+                        console.log('Added Path...');
+                        if (index === paths.length - 1){
+                            res.send(
+                                {
+                                    success: true
+                                }
+                            );
+                    }
+                }
+                });
+
+            });
+        }
+    });
+
+});
+
+
 router.post("/createpath", function (req, res) {
     console.log("create path request", req.body);
     let connection = require('../lib/db');
-    let query = "select distinct(routeid) from paths p1 where (select idx from paths p2 where p2.routeid = p1.routeid AND p2.name =" + connection.escape(req.body.from) + " ) < (select idx from paths p3 where p3.routeid = p1.routeid AND  p3.name = " + connection.escape(req.body.to) + ")";
-    connection.query(query, function (error, results, fields) {
+    let query = "insert into route(id,  init_time, end_time) values(?,?,?)";
+    let inpData = req.body;
+    connection.query(query, [inpData.id, inpData.init_time, inpData.end_time], function (error, results, fields) {
         if (error) {
             console.log(error);
             res.status(500).send({
@@ -131,5 +180,7 @@ router.post("/createpath", function (req, res) {
         };
     });
 });
+
+
 
 module.exports = router;
