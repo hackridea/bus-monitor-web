@@ -64,7 +64,7 @@ router.post("/getbuses", function (req, res) {
                         id = results2[0].id;
                         let sendData = { id: id, init_time: results2[0].init_time, end_time: results2[0].end_time, routeid: routeid }
                         console.log(sendData)
-                        let query2 = `select name from bus where id = '${results2[0].id}'`;
+                        let query2 = `select name, crowd_status from bus where id = '${results2[0].id}'`;
                         connection.query(query2, function (error, results3, fields) {
                             if (error) {
                                 console.log(error);
@@ -77,7 +77,8 @@ router.post("/getbuses", function (req, res) {
                             }
                             else {
                                 sendData.name = results3[0].name;
-                                console.log(results3[0].name)
+                                sendData.crowd_status = results[0].crowd_status;
+                                console.log(results3[0].name, results[0].crowd_status)
                             }
                         });
                         let query3 = "select * from paths where routeid =" + routeid + ";";
@@ -112,11 +113,11 @@ router.post("/getbuses", function (req, res) {
 });
 
 router.get("/getbus/:id", function (req, res) {
-    console.log("asking for "+req.params.id);
+    console.log("asking for " + req.params.id);
     let id = req.params.id;
     let connection = require('../lib/db');
-    let sendData = { name: "", routes: [] };
-    let query2 = `select name from bus where id = '${id}'`;
+    let sendData = { name: "", crowd_status: 0, routes: [] };
+    let query2 = `select name, crowd_status from bus where id = '${id}'`;
     connection.query(query2, function (error, results3, fields) {
         if (error) {
             console.log(error);
@@ -137,6 +138,7 @@ router.get("/getbus/:id", function (req, res) {
                 return;
             }
             sendData.name = results3[0].name;
+            sendData.crowd_status = results3[0].crowd_status;
             let query = `select *  from route where id = '${id}';`;
             connection.query(query, function (error, routes, fields) {
                 if (error) {
